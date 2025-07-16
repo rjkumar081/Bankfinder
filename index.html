@@ -3,33 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IFSC Code Finder (Dropdown + API)</title>
+  <title>IFSC Code Finder - Dual Mode</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
     .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; box-shadow: 0 0 10px #ccc; border-radius: 10px; }
     h2, h3 { text-align: center; }
     input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
     .results { margin-top: 20px; background: #eef; padding: 15px; border-radius: 8px; }
+    .section { margin-top: 40px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>IFSC Code Finder (API + Dropdown)</h2>
+    <h2>IFSC Code Finder</h2>
 
     <!-- IFSC Code Search -->
-    <h3>Search by IFSC Code</h3>
-    <input type="text" id="ifscInput" placeholder="Enter IFSC Code">
-    <button onclick="searchByIFSC()">Search</button>
-
-    <hr>
+    <div class="section">
+      <h3>1. Search Bank Details by IFSC Code</h3>
+      <input type="text" id="ifscInput" placeholder="Enter IFSC Code (e.g., SBIN0000001)">
+      <button onclick="searchByIFSC()">Search</button>
+    </div>
 
     <!-- Dropdown Search -->
-    <h3>Search by Bank Details</h3>
-    <select id="bankSelect" onchange="loadStates()"></select>
-    <select id="stateSelect" onchange="loadCities()"></select>
-    <select id="citySelect" onchange="loadBranches()"></select>
-    <select id="branchSelect"></select>
-    <button onclick="searchByDropdown()">Search</button>
+    <div class="section">
+      <h3>2. Search IFSC Code by Bank Details</h3>
+      <select id="bankSelect" onchange="loadStates()"></select>
+      <select id="stateSelect" onchange="loadCities()"></select>
+      <select id="citySelect" onchange="loadBranches()"></select>
+      <select id="branchSelect"></select>
+      <button onclick="searchByDropdown()">Search</button>
+    </div>
 
     <div class="results" id="resultBox" style="display:none;"></div>
   </div>
@@ -38,7 +41,7 @@
     let bankData = [];
 
     async function loadData() {
-      const res = await fetch('https://rjkumar081.github.io/bankfinder/banks.json'); // replace with your hosted JSON path
+      const res = await fetch('https://rjkumar081.github.io/bankfinder/banks.json'); // ✅ Replace if needed
       bankData = await res.json();
       const banks = [...new Set(bankData.map(b => b.BANK))].sort();
       populateSelect('bankSelect', banks);
