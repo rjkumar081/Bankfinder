@@ -1,0 +1,23 @@
+[
+  {
+    "BANK": "STATE BANK OF INDIA",
+    "STATE": "DELHI",
+    "CITY": "NEW DELHI",
+    "BRANCH": "MAIN BRANCH",
+    "IFSC": "SBIN0000001"
+  },
+  {
+    "BANK": "STATE BANK OF INDIA",
+    "STATE": "DELHI",
+    "CITY": "NEW DELHI",
+    "BRANCH": "KAROL BAGH",
+    "IFSC": "SBIN0000123"
+  },
+  {
+    "BANK": "HDFC BANK",
+    "STATE": "MAHARASHTRA",
+    "CITY": "MUMBAI",
+    "BRANCH": "ANDHERI",
+    "IFSC": "HDFC0000456"
+  }
+]
