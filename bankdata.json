@@ -58,6 +58,15 @@
     "STATE": "MAHARASHTRA",
     "STD CODE": "0",
     "PHONE": "9653261383"
+  },
+  {
+            "BANK": "ABHYUDAYA COOPERATIVE BANK LIMITED",
+            "IFSC": "ABHY0065006",
+            "BRANCH": "FORT",
+            "ADDRESS": "ABHYUDAYA BANK BLDG., 251, PERIN NARIMAN STREET, FORT, MUMBAI-400001",
+            "CITY": "GREATER MUMBAI",
+            "STATE": "MAHARASHTRA",
+            "STD CODE": "22",
+            "PHONE": "22614468"
   }
-  
 ]
