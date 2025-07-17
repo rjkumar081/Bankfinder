@@ -166,7 +166,7 @@
     }
 
     let bankData = [];
-    fetch('assets/bankdata.json').then(r => r.json()).then(json => {
+    fetch('bankdata.json').then(r => r.json()).then(json => {
       bankData = json;
       const banks = [...new Set(bankData.map(i => i.BANK))].sort();
       document.getElementById('bankName').innerHTML = '<option>Select Bank</option>' + banks.map(b => `<option>${b}</option>`).join('');
