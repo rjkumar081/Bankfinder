@@ -1,58 +1,152 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bank IFSC Finder</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <title>IFSC Finder</title>
   <style>
-    body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-    .sidebar { min-width: 200px; background: #fff; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
-    .tab-pane { padding: 20px; }
-    .tab-content { flex-grow: 1; background: #fff; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
-    .nav-link { cursor: pointer; }
-    pre { white-space: pre-wrap; }
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      margin: 0;
+    }
+    .tab-buttons {
+      width: 220px;
+      background: #f5f5f5;
+      padding: 20px;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    }
+    .tab-buttons button {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: none;
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .tab-buttons button.active {
+      background: #0056b3;
+    }
+    .tab-content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    .tab-content > div {
+      display: none;
+    }
+    .tab-content > div.active {
+      display: block;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    pre {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
-  <div class="container-fluid mt-4">
-    <div class="row">
-      <div class="col-md-3 sidebar">
-        <ul class="nav flex-column nav-pills" id="tabMenu">
-          <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="pill" href="#ifscTab">🔎 IFSC ➜ Bank Details</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="pill" href="#detailsTab">🏦 Bank ➜ IFSC Code</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-md-9">
-        <div class="tab-content">
-          <!-- Tab 1 -->
-          <div class="tab-pane fade show active" id="ifscTab">
-            <h4>Find Bank Details by IFSC</h4>
-            <input type="text" id="ifscInput" class="form-control mb-2" placeholder="Enter IFSC Code e.g. SBIN0000001" />
-            <button onclick="getBankDetails()" class="btn btn-primary">Search</button>
-            <pre id="ifscResult" class="mt-3 bg-light p-3 rounded"></pre>
-          </div>
 
-          <!-- Tab 2 -->
-          <div class="tab-pane fade" id="detailsTab">
-            <h4>Find IFSC Code by Bank Details</h4>
-            <select id="bankSelect" class="form-select mb-2"><option>Select Bank</option></select>
-            <select id="stateSelect" class="form-select mb-2"><option>Select State</option></select>
-            <select id="citySelect" class="form-select mb-2"><option>Select City</option></select>
-            <select id="branchSelect" class="form-select mb-2"><option>Select Branch</option></select>
-            <button onclick="findIFSCCode()" class="btn btn-success">Find IFSC Code</button>
-            <pre id="detailsResult" class="mt-3 bg-light p-3 rounded"></pre>
-          </div>
-        </div>
-      </div>
+  <div class="tab-buttons">
+    <button onclick="showTab(0)" class="active">Find Bank Details</button>
+    <button onclick="showTab(1)">Find IFSC Code</button>
+  </div>
+
+  <div class="tab-content">
+    <!-- Tab 1 -->
+    <div class="tab active">
+      <h2>Find Bank Details by IFSC</h2>
+      <input type="text" id="ifscInput" placeholder="Enter IFSC Code (e.g., SBIN0000001)" oninput="getBankDetailsAuto()">
+      <pre id="ifscResult">Bank details will appear here...</pre>
+    </div>
+
+    <!-- Tab 2 -->
+    <div class="tab">
+      <h2>Find IFSC Code by Bank Details</h2>
+      <select id="bankSelect"><option value="">Select Bank</option></select>
+      <select id="stateSelect"><option value="">Select State</option></select>
+      <select id="citySelect"><option value="">Select City</option></select>
+      <select id="branchSelect"><option value="">Select Branch</option></select>
+      <pre id="detailsResult">IFSC code will appear here...</pre>
     </div>
   </div>
-  <script src="assets/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+  <script>
+    function showTab(index) {
+      const tabs = document.querySelectorAll('.tab');
+      const buttons = document.querySelectorAll('.tab-buttons button');
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+        buttons[i].classList.toggle('active', i === index);
+      });
+    }
+
+    // Tab 1: Auto-fetch by IFSC
+    let ifscTimeout;
+    function getBankDetailsAuto() {
+      clearTimeout(ifscTimeout);
+      const input = document.getElementById("ifscInput");
+      const resultBox = document.getElementById("ifscResult");
+      ifscTimeout = setTimeout(async () => {
+        const ifsc = input.value.trim().toUpperCase();
+        if (ifsc.length < 5) {
+          resultBox.textContent = "Please enter a valid IFSC code.";
+          return;
+        }
+        resultBox.textContent = "Fetching...";
+        try {
+          const res = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
+          if (!res.ok) throw new Error("Invalid IFSC or API error.");
+          const data = await res.json();
+          resultBox.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          resultBox.textContent = "Could not fetch details. Please check IFSC code.";
+        }
+      }, 600); // Delay for user to finish typing
+    }
+
+    // Tab 2: Dropdowns using bankdata.json
+    let bankData = [];
+
+    fetch("assets/bankdata.json")
+      .then(res => res.json())
+      .then(data => {
+        bankData = data;
+        const banks = [...new Set(data.map(d => d.BANK))].sort();
+        populateDropdown(document.getElementById("bankSelect"), banks);
+      });
+
+    function populateDropdown(dropdown, values) {
+      dropdown.innerHTML = '<option value="">Select</option>';
+      values.forEach(val => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        dropdown.appendChild(opt);
+      });
+    }
+
+    document.getElementById("bankSelect").addEventListener("change", function () {
+      const states = [...new Set(bankData.filter(d => d.BANK === this.value).map(d => d.STATE))].sort();
+      populateDropdown(document.getElementById("stateSelect"), states);
+      document.getElementById("citySelect").innerHTML = '';
+      document.getElementById("branchSelect").innerHTML = '';
+      document.getElementById("detailsResult").textContent = 'IFSC code will appear here...';
+    });
+
+    document.getElementById("stateSelect").addEventListener("change", f
+                                                            
