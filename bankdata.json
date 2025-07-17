@@ -48,5 +48,16 @@
     "CITY": "KOLKATA",
     "CONTACT": "03334567890",
     "MICR": "700211004"
-  }
+  },
+  {
+            "BANK": "ABHYUDAYA COOPERATIVE BANK LIMITED",
+            "IFSC": "ABHY0065001",
+            "BRANCH": "RTGS-HO",
+            "ADDRESS": "ABHYUDAYA BUILDING, KAMAL NATH MARG,NEHRU NAGAR,KURLA-EAST,MUMBAI-400024",
+            "CITY": "GREATER MUMBAI",
+            "STATE": "MAHARASHTRA",
+            "STD CODE": "0",
+            "PHONE": "9653261383"
+        },
+  
 ]
