@@ -3,83 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>IFSC & Bank Finder</title>
+  <title>Bank Finder</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #eef2f3, #8e9eab);
-      color: #333;
+      background: #f4f7f9;
     }
-
     header {
-      background-color: #004080;
-      color: white;
-      padding: 20px;
+      background: #005f99;
+      color: #fff;
+      padding: 15px;
       text-align: center;
-      font-size: 22px;
+      font-size: 1.6em;
       font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-
-    .tabs {
+    .tab-container {
       display: flex;
       justify-content: center;
-      margin: 20px 0;
-      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
     }
-
     .tab {
-      background: #0066cc;
-      color: white;
-      padding: 10px 20px;
+      flex: 1;
+      min-width: 150px;
+      padding: 12px;
+      background: #e0e0e0;
+      text-align: center;
       cursor: pointer;
-      border-radius: 8px;
-      border: none;
+      transition: background 0.3s;
+      border: 1px solid #ccc;
+    }
+    .tab.active {
+      background: #0078d7;
+      color: white;
       font-weight: bold;
     }
-
-    .tab.active {
-      background: #003366;
-    }
-
     .tab-content {
       display: none;
       padding: 20px;
-      background: white;
-      border-radius: 10px;
-      margin: 0 auto;
-      max-width: 600px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 700px;
+      margin: auto;
     }
-
     .tab-content.active {
       display: block;
     }
-
+    label {
+      display: block;
+      margin: 12px 0 5px;
+      font-weight: bold;
+    }
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      font-size: 16px;
-      border-radius: 8px;
+      font-size: 1em;
       border: 1px solid #ccc;
+      border-radius: 5px;
     }
-
     .result-card {
-      background: #f5faff;
+      background: #fff;
+      margin-top: 15px;
       padding: 15px;
-      border-left: 5px solid #004080;
-      border-radius: 6px;
-      margin-top: 10px;
-      font-size: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
     footer {
-      background: #004080;
-      color: white;
-      text-align: center;
+      background: #005f99;
+      color: #fff;
       padding: 12px;
+      text-align: center;
       font-weight: bold;
       position: relative;
       margin-top: 40px;
@@ -88,154 +81,180 @@
 </head>
 <body>
 
-  <header>
-    Get Bank Detail in One Click
-  </header>
+<header>💳 Bank IFSC Finder - Get Bank Details in One Click</header>
 
-  <div class="tabs">
-    <button class="tab active" onclick="showTab(1)">Find Bank Details by IFSC</button>
-    <button class="tab" onclick="showTab(2)">Find IFSC by Bank Details</button>
-  </div>
+<div class="tab-container">
+  <div class="tab active" onclick="switchTab(1)">🔍 Find Bank by IFSC</div>
+  <div class="tab" onclick="switchTab(2)">🏦 Find IFSC by Bank Details</div>
+</div>
 
-  <!-- Tab 1 -->
-  <div class="tab-content active" id="tab1">
+<!-- Tab 1 -->
+<div class="tab-content active" id="tab1">
+  <div style="max-width: 600px; margin: auto;">
     <label>Enter IFSC Code</label>
     <input type="text" id="ifscInput" placeholder="e.g., SBIN0005573" oninput="fetchIFSCDetails()" />
     <div id="resultBox1"></div>
   </div>
+</div>
 
-  <!-- Tab 2 -->
-  <div class="tab-content" id="tab2">
-    <label>Select Bank Name</label>
+<!-- Tab 2 -->
+<div class="tab-content" id="tab2">
+  <div style="max-width: 600px; margin: auto;">
+    <label>Bank</label>
     <select id="bankSelect" onchange="populateStates()"></select>
 
-    <label>Select State</label>
+    <label>State</label>
     <select id="stateSelect" onchange="populateCities()"></select>
 
-    <label>Select City</label>
+    <label>City</label>
     <select id="citySelect" onchange="populateBranches()"></select>
 
-    <label>Select Branch</label>
+    <label>Branch</label>
     <select id="branchSelect" onchange="displayIFSC()"></select>
 
-    <div id="resultBox2"></div>
+    <div id="resultBox2" class="result-card"></div>
   </div>
+</div>
 
-  <footer>
-    Designed by Raj © 2025
-  </footer>
+<footer>🔗 Designed by Raj</footer>
 
-  <script>
-    function showTab(tabNumber) {
-      document.querySelectorAll('.tab').forEach((el, i) =>
-        el.classList.toggle('active', i === tabNumber - 1)
-      );
-      document.querySelectorAll('.tab-content').forEach((el, i) =>
-        el.classList.toggle('active', i === tabNumber - 1)
-      );
+<script>
+  let bankData = [];
+
+  function switchTab(tabNum) {
+    document.querySelectorAll('.tab').forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === tabNum);
+    });
+    document.querySelectorAll('.tab-content').forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === tabNum);
+    });
+  }
+
+  // Tab 1: Live IFSC Fetch
+  async function fetchIFSCDetails() {
+    const ifsc = document.getElementById('ifscInput').value.trim().toUpperCase();
+    const resultBox = document.getElementById('resultBox1');
+
+    if (ifsc.length < 5) {
+      resultBox.innerHTML = '';
+      return;
     }
 
-    // Tab 1: Live API Fetch
-    function fetchIFSCDetails() {
-      const ifsc = document.getElementById("ifscInput").value.trim().toUpperCase();
-      const resultBox = document.getElementById("resultBox1");
+    try {
+      const res = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
+      if (!res.ok) throw new Error('Invalid IFSC');
+      const data = await res.json();
 
-      if (ifsc.length >= 5) {
-        fetch(`https://ifsc.razorpay.com/${ifsc}`)
-          .then(response => {
-            if (!response.ok) throw new Error("Invalid IFSC");
-            return response.json();
-          })
-          .then(data => {
-            resultBox.innerHTML = `
-              <div class="result-card">
-                <h3>${data.BANK} - ${data.BRANCH}</h3>
-                <p><strong>IFSC:</strong> ${data.IFSC}</p>
-                <p><strong>Address:</strong> ${data.ADDRESS}</p>
-                <p><strong>City:</strong> ${data.CITY}</p>
-                <p><strong>District:</strong> ${data.DISTRICT}</p>
-                <p><strong>State:</strong> ${data.STATE}</p>
-                <p><strong>MICR:</strong> ${data.MICR || 'N/A'}</p>
-                <p><strong>UPI:</strong> ${data.UPI ? 'Available' : 'Not Available'}</p>
-                <p><strong>NEFT:</strong> ${data.NEFT ? 'Available' : 'Not Available'}</p>
-                <p><strong>RTGS:</strong> ${data.RTGS ? 'Available' : 'Not Available'}</p>
-                <p><strong>IMPS:</strong> ${data.IMPS ? 'Available' : 'Not Available'}</p>
-              </div>`;
-          })
-          .catch(() => {
-            resultBox.innerHTML = "<div class='result-card'>Invalid IFSC or no data found.</div>";
-          });
-      } else {
-        resultBox.innerHTML = "";
-      }
+      resultBox.innerHTML = `
+        <div class="result-card">
+          <h3>${data.BANK} - ${data.BRANCH}</h3>
+          <p><strong>IFSC:</strong> ${data.IFSC}</p>
+          <p><strong>Address:</strong> ${data.ADDRESS}</p>
+          <p><strong>City:</strong> ${data.CITY}</p>
+          <p><strong>District:</strong> ${data.DISTRICT}</p>
+          <p><strong>State:</strong> ${data.STATE}</p>
+          <p><strong>MICR:</strong> ${data.MICR || 'N/A'}</p>
+          <p><strong>UPI:</strong> ${data.UPI ? 'Available' : 'Not Available'}</p>
+          <p><strong>NEFT:</strong> ${data.NEFT ? 'Available' : 'Not Available'}</p>
+          <p><strong>RTGS:</strong> ${data.RTGS ? 'Available' : 'Not Available'}</p>
+          <p><strong>IMPS:</strong> ${data.IMPS ? 'Available' : 'Not Available'}</p>
+        </div>
+      `;
+    } catch {
+      resultBox.innerHTML = '<div class="result-card">❌ Invalid IFSC Code or Not Found.</div>';
     }
+  }
 
-    // Tab 2: Offline Search
-    let bankData = [];
-    let filteredData = [];
+  // Tab 2: Offline data
+  async function loadBankData() {
+    try {
+      const res = await fetch('bankdata.json');
+      bankData = await res.json();
 
-    fetch("bankdata.json")
-      .then(res => res.json())
-      .then(data => {
-        bankData = data;
-        const banks = [...new Set(data.map(b => b.BANK))].sort();
-        const bankSelect = document.getElementById("bankSelect");
-        bankSelect.innerHTML = '<option value="">--Select--</option>' +
-          banks.map(b => `<option>${b}</option>`).join("");
+      const banks = [...new Set(bankData.map(b => b.BANK))].sort();
+      const bankSelect = document.getElementById('bankSelect');
+      banks.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b;
+        opt.textContent = b;
+        bankSelect.appendChild(opt);
       });
-
-    function populateStates() {
-      const bank = document.getElementById("bankSelect").value;
-      const states = [...new Set(bankData.filter(b => b.BANK === bank).map(b => b.STATE))].sort();
-      const stateSelect = document.getElementById("stateSelect");
-      stateSelect.innerHTML = '<option value="">--Select--</option>' +
-        states.map(s => `<option>${s}</option>`).join("");
-      document.getElementById("citySelect").innerHTML = '';
-      document.getElementById("branchSelect").innerHTML = '';
-      document.getElementById("resultBox2").innerHTML = '';
+    } catch (err) {
+      alert('Failed to load local bank data.');
     }
+  }
 
-    function populateCities() {
-      const bank = document.getElementById("bankSelect").value;
-      const state = document.getElementById("stateSelect").value;
-      const cities = [...new Set(bankData.filter(b => b.BANK === bank && b.STATE === state).map(b => b.CITY))].sort();
-      const citySelect = document.getElementById("citySelect");
-      citySelect.innerHTML = '<option value="">--Select--</option>' +
-        cities.map(c => `<option>${c}</option>`).join("");
-      document.getElementById("branchSelect").innerHTML = '';
-      document.getElementById("resultBox2").innerHTML = '';
+  function populateStates() {
+    const bank = document.getElementById('bankSelect').value;
+    const states = [...new Set(bankData.filter(b => b.BANK === bank).map(b => b.STATE))].sort();
+    const stateSelect = document.getElementById('stateSelect');
+    stateSelect.innerHTML = '<option value="">Select State</option>';
+    states.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      stateSelect.appendChild(opt);
+    });
+
+    document.getElementById('citySelect').innerHTML = '';
+    document.getElementById('branchSelect').innerHTML = '';
+    document.getElementById('resultBox2').innerHTML = '';
+  }
+
+  function populateCities() {
+    const bank = document.getElementById('bankSelect').value;
+    const state = document.getElementById('stateSelect').value;
+    const cities = [...new Set(bankData.filter(b => b.BANK === bank && b.STATE === state).map(b => b.CITY))].sort();
+    const citySelect = document.getElementById('citySelect');
+    citySelect.innerHTML = '<option value="">Select City</option>';
+    cities.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      citySelect.appendChild(opt);
+    });
+
+    document.getElementById('branchSelect').innerHTML = '';
+    document.getElementById('resultBox2').innerHTML = '';
+  }
+
+  function populateBranches() {
+    const bank = document.getElementById('bankSelect').value;
+    const state = document.getElementById('stateSelect').value;
+    const city = document.getElementById('citySelect').value;
+    const branches = bankData.filter(b => b.BANK === bank && b.STATE === state && b.CITY === city);
+    const branchSelect = document.getElementById('branchSelect');
+    branchSelect.innerHTML = '<option value="">Select Branch</option>';
+    branches.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.BRANCH;
+      opt.textContent = b.BRANCH;
+      branchSelect.appendChild(opt);
+    });
+
+    document.getElementById('resultBox2').innerHTML = '';
+  }
+
+  function displayIFSC() {
+    const bank = document.getElementById('bankSelect').value;
+    const state = document.getElementById('stateSelect').value;
+    const city = document.getElementById('citySelect').value;
+    const branch = document.getElementById('branchSelect').value;
+    const match = bankData.find(b => b.BANK === bank && b.STATE === state && b.CITY === city && b.BRANCH === branch);
+
+    if (match) {
+      document.getElementById('resultBox2').innerHTML = `
+        <p><strong>IFSC:</strong> ${match.IFSC}</p>
+        <p><strong>Address:</strong> ${match.ADDRESS}</p>
+        <p><strong>District:</strong> ${match.DISTRICT}</p>
+        <p><strong>MICR:</strong> ${match.MICR || 'N/A'}</p>
+      `;
+    } else {
+      document.getElementById('resultBox2').innerHTML = '<p>No data found.</p>';
     }
+  }
 
-    function populateBranches() {
-      const bank = document.getElementById("bankSelect").value;
-      const state = document.getElementById("stateSelect").value;
-      const city = document.getElementById("citySelect").value;
-      filteredData = bankData.filter(b => b.BANK === bank && b.STATE === state && b.CITY === city);
-      const branches = [...new Set(filteredData.map(b => b.BRANCH))].sort();
-      const branchSelect = document.getElementById("branchSelect");
-      branchSelect.innerHTML = '<option value="">--Select--</option>' +
-        branches.map(b => `<option>${b}</option>`).join("");
-      document.getElementById("resultBox2").innerHTML = '';
-    }
-
-    function displayIFSC() {
-      const branch = document.getElementById("branchSelect").value;
-      const bank = filteredData.find(b => b.BRANCH === branch);
-      const resultBox = document.getElementById("resultBox2");
-
-      if (bank) {
-        resultBox.innerHTML = `
-          <div class="result-card">
-            <h3>${bank.BANK} - ${bank.BRANCH}</h3>
-            <p><strong>IFSC:</strong> ${bank.IFSC}</p>
-            <p><strong>Address:</strong> ${bank.ADDRESS}</p>
-            <p><strong>City:</strong> ${bank.CITY}</p>
-            <p><strong>District:</strong> ${bank.DISTRICT}</p>
-            <p><strong>State:</strong> ${bank.STATE}</p>
-            <p><strong>MICR:</strong> ${bank.MICR || 'N/A'}</p>
-          </div>`;
-      }
-    }
-  </script>
+  window.onload = loadBankData;
+</script>
 </body>
 </html>
