@@ -41,7 +41,7 @@
     let bankData = [];
 
     async function loadData() {
-      const res = await fetch('https://rjkumar081.github.io/bankfinder/banks.json'); // ✅ Replace if needed
+      const res = await fetch('https://rjkumar081.github.io/bankfinder/bankdata.json'); // ✅ Replace if needed
       bankData = await res.json();
       const banks = [...new Set(bankData.map(b => b.BANK))].sort();
       populateSelect('bankSelect', banks);
