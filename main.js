@@ -4,16 +4,14 @@ let bankData = [];
 async function getBankDetails() {
   const ifsc = document.getElementById('ifscInput').value.trim().toUpperCase();
   const resultBox = document.getElementById('ifscResult');
-  resultBox.textContent = "Fetching...";
+  resultBox.textContent = "Fetching from API...";
   try {
     const res = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
-    if (!res.ok) throw new Error("API failed, falling back to offline data.");
+    if (!res.ok) throw new Error("API error");
     const data = await res.json();
     resultBox.textContent = JSON.stringify(data, null, 2);
-  } catch (err) {
-    console.warn("API failed, trying offline JSON...", err);
-    const result = bankData.find(b => b.IFSC === ifsc);
-    resultBox.textContent = result ? JSON.stringify(result, null, 2) : "No matching IFSC found offline.";
+  } catch {
+    resultBox.textContent = "❌ Unable to fetch details from live API.";
   }
 }
 
@@ -62,5 +60,5 @@ function findIFSCCode() {
   const branch = document.getElementById('branchSelect').value;
   const resultBox = document.getElementById('detailsResult');
   const result = bankData.find(b => b.BANK === bank && b.STATE === state && b.CITY === city && b.BRANCH === branch);
-  resultBox.textContent = result ? JSON.stringify(result, null, 2) : "No matching IFSC found.";
+  resultBox.textContent = result ? JSON.stringify(result, null, 2) : "❌ No matching IFSC found.";
 }
