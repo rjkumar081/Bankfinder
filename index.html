@@ -166,11 +166,20 @@
     }
 
     let bankData = [];
-    fetch('bankdata.json').then(r => r.json()).then(json => {
-      bankData = json;
-      const banks = [...new Set(bankData.map(i => i.BANK))].sort();
-      document.getElementById('bankName').innerHTML = '<option>Select Bank</option>' + banks.map(b => `<option>${b}</option>`).join('');
-    });
+    const urls = [
+  'https://raw.githubusercontent.com/rjkumar081/Bankfinder/main/bankdata1.json',
+  'https://raw.githubusercontent.com/rjkumar081/Bankfinder/main/bankdata2.json',
+  'https://raw.githubusercontent.com/rjkumar081/Bankfinder/main/bankdata3.json'
+];
+
+Promise.all(urls.map(url => fetch(url).then(r => r.json())))
+  .then(results => {
+    bankData = results.flat(); // Merge all data
+    const banks = [...new Set(bankData.map(i => i.BANK))].sort();
+    document.getElementById('bankName').innerHTML =
+      '<option>Select Bank</option>' + banks.map(b => `<option>${b}</option>`).join('');
+  });
+
 
     function populateStates() {
       const bank = document.getElementById('bankName').value;
