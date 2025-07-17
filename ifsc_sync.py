@@ -3,7 +3,7 @@
 import csv, json, requests
 
 csv_url = 'https://www.example.com/latest-ifsc.csv'  # Replace with real source
-output_json = 'banks.json'
+output_json = 'bankdata.json'
 
 def csv_to_json(url, json_file):
     response = requests.get(url)
