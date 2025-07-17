@@ -5,148 +5,174 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>IFSC Finder</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
       margin: 0;
+      padding: 0;
+      background: #f8f9fa;
     }
-    .tab-buttons {
-      width: 220px;
-      background: #f5f5f5;
+    .container {
+      max-width: 900px;
+      margin: auto;
       padding: 20px;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
     }
-    .tab-buttons button {
-      width: 100%;
-      padding: 15px;
-      margin-bottom: 10px;
-      border: none;
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      padding: 12px 25px;
       background: #007bff;
       color: white;
-      font-weight: bold;
+      border: none;
       cursor: pointer;
+      margin: 0 5px;
       border-radius: 5px;
     }
-    .tab-buttons button.active {
-      background: #0056b3;
+    .tab-button.active {
+      background-color: #0056b3;
     }
     .tab-content {
-      flex: 1;
-      padding: 30px;
-      overflow-y: auto;
-    }
-    .tab-content > div {
       display: none;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .tab-content > div.active {
+    .tab-content.active {
       display: block;
     }
     input, select {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
       border: 1px solid #ccc;
+      border-radius: 5px;
     }
     pre {
-      background: #f9f9f9;
+      background: #f1f1f1;
       padding: 15px;
       border-radius: 5px;
-      border: 1px solid #ddd;
+      overflow-x: auto;
       white-space: pre-wrap;
       word-break: break-word;
     }
   </style>
 </head>
 <body>
-
-  <div class="tab-buttons">
-    <button onclick="showTab(0)" class="active">Find Bank Details</button>
-    <button onclick="showTab(1)">Find IFSC Code</button>
+<div class="container">
+  <div class="tabs">
+    <button class="tab-button active" onclick="showTab(0)">Find Bank Details</button>
+    <button class="tab-button" onclick="showTab(1)">Find IFSC Code</button>
   </div>
 
-  <div class="tab-content">
-    <!-- Tab 1 -->
-    <div class="tab active">
-      <h2>Find Bank Details by IFSC</h2>
-      <input type="text" id="ifscInput" placeholder="Enter IFSC Code (e.g., SBIN0000001)" oninput="getBankDetailsAuto()">
-      <pre id="ifscResult">Bank details will appear here...</pre>
-    </div>
-
-    <!-- Tab 2 -->
-    <div class="tab">
-      <h2>Find IFSC Code by Bank Details</h2>
-      <select id="bankSelect"><option value="">Select Bank</option></select>
-      <select id="stateSelect"><option value="">Select State</option></select>
-      <select id="citySelect"><option value="">Select City</option></select>
-      <select id="branchSelect"><option value="">Select Branch</option></select>
-      <pre id="detailsResult">IFSC code will appear here...</pre>
-    </div>
+  <div id="tab1" class="tab-content active">
+    <h2>Find Bank Details by IFSC</h2>
+    <input type="text" id="ifscInput" placeholder="Enter IFSC Code (e.g., SBIN0000001)" oninput="getBankDetailsAuto()">
+    <pre id="ifscResult">Bank details will appear here...</pre>
   </div>
 
-  <script>
-    function showTab(index) {
-      const tabs = document.querySelectorAll('.tab');
-      const buttons = document.querySelectorAll('.tab-buttons button');
-      tabs.forEach((tab, i) => {
-        tab.classList.toggle('active', i === index);
-        buttons[i].classList.toggle('active', i === index);
-      });
-    }
+  <div id="tab2" class="tab-content">
+    <h2>Find IFSC Code by Bank Details</h2>
+    <select id="bankSelect"><option value="">Select Bank</option></select>
+    <select id="stateSelect"><option value="">Select State</option></select>
+    <select id="citySelect"><option value="">Select City</option></select>
+    <select id="branchSelect"><option value="">Select Branch</option></select>
+    <pre id="detailsResult">IFSC code will appear here...</pre>
+  </div>
+</div>
 
-    // Tab 1: Auto-fetch by IFSC
-    let ifscTimeout;
-    function getBankDetailsAuto() {
-      clearTimeout(ifscTimeout);
-      const input = document.getElementById("ifscInput");
-      const resultBox = document.getElementById("ifscResult");
-      ifscTimeout = setTimeout(async () => {
-        const ifsc = input.value.trim().toUpperCase();
-        if (ifsc.length < 5) {
-          resultBox.textContent = "Please enter a valid IFSC code.";
-          return;
-        }
-        resultBox.textContent = "Fetching...";
-        try {
-          const res = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
-          if (!res.ok) throw new Error("Invalid IFSC or API error.");
-          const data = await res.json();
-          resultBox.textContent = JSON.stringify(data, null, 2);
-        } catch (err) {
-          resultBox.textContent = "Could not fetch details. Please check IFSC code.";
-        }
-      }, 600); // Delay for user to finish typing
-    }
+<script>
+  function showTab(index) {
+    const buttons = document.querySelectorAll(".tab-button");
+    const tabs = document.querySelectorAll(".tab-content");
+    buttons.forEach((btn, i) => {
+      btn.classList.toggle("active", i === index);
+      tabs[i].classList.toggle("active", i === index);
+    });
+  }
 
-    // Tab 2: Dropdowns using bankdata.json
-    let bankData = [];
+  // Tab 1: API fetch
+  let ifscTimeout;
+  function getBankDetailsAuto() {
+    clearTimeout(ifscTimeout);
+    const input = document.getElementById("ifscInput");
+    const resultBox = document.getElementById("ifscResult");
+    ifscTimeout = setTimeout(async () => {
+      const ifsc = input.value.trim().toUpperCase();
+      if (ifsc.length < 5) {
+        resultBox.textContent = "Please enter a valid IFSC code.";
+        return;
+      }
+      resultBox.textContent = "Fetching...";
+      try {
+        const res = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
+        if (!res.ok) throw new Error("Invalid IFSC or API error.");
+        const data = await res.json();
+        resultBox.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultBox.textContent = "Could not fetch details. Please check IFSC code.";
+      }
+    }, 600);
+  }
 
-    fetch("assets/bankdata.json")
-      .then(res => res.json())
-      .then(data => {
-        bankData = data;
-        const banks = [...new Set(data.map(d => d.BANK))].sort();
-        populateDropdown(document.getElementById("bankSelect"), banks);
-      });
-
-    function populateDropdown(dropdown, values) {
-      dropdown.innerHTML = '<option value="">Select</option>';
-      values.forEach(val => {
-        const opt = document.createElement("option");
-        opt.value = val;
-        opt.textContent = val;
-        dropdown.appendChild(opt);
-      });
-    }
-
-    document.getElementById("bankSelect").addEventListener("change", function () {
-      const states = [...new Set(bankData.filter(d => d.BANK === this.value).map(d => d.STATE))].sort();
-      populateDropdown(document.getElementById("stateSelect"), states);
-      document.getElementById("citySelect").innerHTML = '';
-      document.getElementById("branchSelect").innerHTML = '';
-      document.getElementById("detailsResult").textContent = 'IFSC code will appear here...';
+  // Tab 2: Load JSON data
+  let bankData = [];
+  fetch("assets/bankdata.json")
+    .then(res => res.json())
+    .then(data => {
+      bankData = data;
+      const banks = [...new Set(data.map(d => d.BANK))].sort();
+      populateDropdown(document.getElementById("bankSelect"), banks);
     });
 
-    document.getElementById("stateSelect").addEventListener("change", f
-                                                            
+  function populateDropdown(dropdown, values) {
+    dropdown.innerHTML = '<option value="">Select</option>';
+    values.forEach(val => {
+      const opt = document.createElement("option");
+      opt.value = val;
+      opt.textContent = val;
+      dropdown.appendChild(opt);
+    });
+  }
+
+  document.getElementById("bankSelect").addEventListener("change", function () {
+    const states = [...new Set(bankData.filter(d => d.BANK === this.value).map(d => d.STATE))].sort();
+    populateDropdown(document.getElementById("stateSelect"), states);
+    document.getElementById("citySelect").innerHTML = '';
+    document.getElementById("branchSelect").innerHTML = '';
+    document.getElementById("detailsResult").textContent = 'IFSC code will appear here...';
+  });
+
+  document.getElementById("stateSelect").addEventListener("change", function () {
+    const bank = document.getElementById("bankSelect").value;
+    const cities = [...new Set(bankData.filter(d => d.BANK === bank && d.STATE === this.value).map(d => d.CITY))].sort();
+    populateDropdown(document.getElementById("citySelect"), cities);
+    document.getElementById("branchSelect").innerHTML = '';
+    document.getElementById("detailsResult").textContent = 'IFSC code will appear here...';
+  });
+
+  document.getElementById("citySelect").addEventListener("change", function () {
+    const bank = document.getElementById("bankSelect").value;
+    const state = document.getElementById("stateSelect").value;
+    const branches = [...new Set(bankData.filter(d => d.BANK === bank && d.STATE === state && d.CITY === this.value).map(d => d.BRANCH))].sort();
+    populateDropdown(document.getElementById("branchSelect"), branches);
+    document.getElementById("detailsResult").textContent = 'IFSC code will appear here...';
+  });
+
+  document.getElementById("branchSelect").addEventListener("change", function () {
+    const bank = document.getElementById("bankSelect").value;
+    const state = document.getElementById("stateSelect").value;
+    const city = document.getElementById("citySelect").value;
+    const branch = document.getElementById("branchSelect").value;
+    const resultBox = document.getElementById("detailsResult");
+    const found = bankData.find(d => d.BANK === bank && d.STATE === state && d.CITY === city && d.BRANCH === branch);
+    resultBox.textContent = found ? JSON.stringify(found, null, 2) : "No result found. Please check your selections.";
+  });
+</script>
+</body>
+</html>
