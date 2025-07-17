@@ -1,0 +1,52 @@
+[
+  {
+    "BANK": "STATE BANK OF INDIA",
+    "IFSC": "SBIN0000001",
+    "BRANCH": "MAIN BRANCH",
+    "ADDRESS": "Mumbai Main Branch",
+    "STATE": "MAHARASHTRA",
+    "DISTRICT": "MUMBAI",
+    "CONTACT": "02212345678",
+    "MICR": "400002000"
+  },
+  {
+    "BANK": "HDFC BANK",
+    "IFSC": "HDFC0001234",
+    "BRANCH": "GREATER KAILASH",
+    "ADDRESS": "GK-II, Delhi",
+    "STATE": "DELHI",
+    "DISTRICT": "SOUTH DELHI",
+    "CONTACT": "01145678901",
+    "MICR": "110240001"
+  },
+  {
+    "BANK": "PUNJAB NATIONAL BANK",
+    "IFSC": "PUNB0456700",
+    "BRANCH": "CHANDIGARH SEC 17",
+    "ADDRESS": "Sector 17, Chandigarh",
+    "STATE": "CHANDIGARH",
+    "DISTRICT": "CHANDIGARH",
+    "CONTACT": "01721234567",
+    "MICR": "160024002"
+  },
+  {
+    "BANK": "ICICI BANK",
+    "IFSC": "ICIC0004567",
+    "BRANCH": "GACHIBOWLI",
+    "ADDRESS": "Gachibowli, Hyderabad",
+    "STATE": "TELANGANA",
+    "DISTRICT": "HYDERABAD",
+    "CONTACT": "04098765432",
+    "MICR": "500229003"
+  },
+  {
+    "BANK": "AXIS BANK",
+    "IFSC": "UTIB0002345",
+    "BRANCH": "SALT LAKE",
+    "ADDRESS": "Salt Lake, Kolkata",
+    "STATE": "WEST BENGAL",
+    "DISTRICT": "KOLKATA",
+    "CONTACT": "03334567890",
+    "MICR": "700211004"
+  }
+]
