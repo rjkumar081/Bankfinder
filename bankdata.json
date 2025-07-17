@@ -5,7 +5,7 @@
     "BRANCH": "MAIN BRANCH",
     "ADDRESS": "Mumbai Main Branch",
     "STATE": "MAHARASHTRA",
-    "DISTRICT": "MUMBAI",
+    "CITY": "MUMBAI",
     "CONTACT": "02212345678",
     "MICR": "400002000"
   },
@@ -15,7 +15,7 @@
     "BRANCH": "GREATER KAILASH",
     "ADDRESS": "GK-II, Delhi",
     "STATE": "DELHI",
-    "DISTRICT": "SOUTH DELHI",
+    "CITY": "SOUTH DELHI",
     "CONTACT": "01145678901",
     "MICR": "110240001"
   },
@@ -25,7 +25,7 @@
     "BRANCH": "CHANDIGARH SEC 17",
     "ADDRESS": "Sector 17, Chandigarh",
     "STATE": "CHANDIGARH",
-    "DISTRICT": "CHANDIGARH",
+    "CITY": "CHANDIGARH",
     "CONTACT": "01721234567",
     "MICR": "160024002"
   },
@@ -35,7 +35,7 @@
     "BRANCH": "GACHIBOWLI",
     "ADDRESS": "Gachibowli, Hyderabad",
     "STATE": "TELANGANA",
-    "DISTRICT": "HYDERABAD",
+    "CITY": "HYDERABAD",
     "CONTACT": "04098765432",
     "MICR": "500229003"
   },
@@ -45,7 +45,7 @@
     "BRANCH": "SALT LAKE",
     "ADDRESS": "Salt Lake, Kolkata",
     "STATE": "WEST BENGAL",
-    "DISTRICT": "KOLKATA",
+    "CITY": "KOLKATA",
     "CONTACT": "03334567890",
     "MICR": "700211004"
   }
